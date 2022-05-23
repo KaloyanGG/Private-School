@@ -1,35 +1,48 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using PrivateSchool.Entities;
 
 namespace PrivateSchool.Data
 {
-    public class PrivateSchoolDBContext : DbContext
+    public class PrivateSchoolDBContext : IdentityDbContext
     {
-        protected readonly IConfiguration Configuration;
 
-        public PrivateSchoolDBContext(IConfiguration configuration)
+        public PrivateSchoolDBContext(DbContextOptions<PrivateSchoolDBContext> options)
+            : base(options)
         {
-            Configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(Configuration.GetConnectionString("SchoolDB"));
-            }
-        }
-        /*
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Teacher> Teacher { get; set; }
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<StudentClasses> StudentClasses { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<StudentClasses>(e =>
+            {
+                e.HasKey(k => new { k.StudentId, k.ClassId });
+            });
+
+            modelBuilder.Entity<IdentityUser>()
+                .Ignore(e => e.LockoutEnabled)
+                .Ignore(e => e.LockoutEnd)
+                .Ignore(e => e.NormalizedEmail)
+                .Ignore(e => e.NormalizedUserName)
+                .Ignore(e => e.Email)
+                .Ignore(e => e.EmailConfirmed)
+                .Ignore(e => e.TwoFactorEnabled)
+                .Ignore(e => e.PhoneNumber)
+                .Ignore(e => e.PhoneNumberConfirmed)
+                .Ignore(e => e.SecurityStamp)
+                .Ignore(e => e.AccessFailedCount)
+                .Ignore(e => e.ConcurrencyStamp);
+
             base.OnModelCreating(modelBuilder);
         }
-        */
+        
 
     }
 }
