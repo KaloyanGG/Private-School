@@ -1,18 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace PrivateSchool.Entities
 {
-    public class User : Base<int>
+    public class User : IdentityUser
     {
-        public string PasswordHash { get; set; }
-        public string UserName { get; set; }
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
         public DateTime DateOfBirth { get; set; }
-
-
+        public string EGN { get; set; }
     }
 }

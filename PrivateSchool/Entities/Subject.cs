@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace PrivateSchool.Entities
 {
-    public class Teacher : User
+    public class Subject : Base<int>
     {
-        public int? Level { get; set; }
-
-        public virtual ICollection<Subject> Subjects { get; set; }
+        public int MaxCapacity { get; set; }
 
     }
 }
