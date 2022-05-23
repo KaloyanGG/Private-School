@@ -352,3 +352,4 @@ yarn-error.log*
 /Client/src/utils/API.js
 **/Data/Migrations
 *.jpg
+Migrations
