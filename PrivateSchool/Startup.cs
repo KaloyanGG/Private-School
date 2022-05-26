@@ -38,7 +38,7 @@ namespace PrivateSchool
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = false;
-                options.Password.RequireDigit = true;
+                options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -46,10 +46,6 @@ namespace PrivateSchool
                 options.Password.RequiredLength = 3;
                 options.SignIn.RequireConfirmedEmail = false;
             }).AddEntityFrameworkStores<PrivateSchoolDBContext>();
-
-            services.AddIdentityCore<Teacher>().AddRoles<IdentityRole>().AddEntityFrameworkStores<PrivateSchoolDBContext>();
-
-            services.AddIdentityCore<Student>().AddRoles<IdentityRole>().AddEntityFrameworkStores<PrivateSchoolDBContext>();
 
             // Configure JWT settings object
             IConfigurationSection JWTSection = Configuration.GetSection("JWT");
@@ -86,6 +82,7 @@ namespace PrivateSchool
             });
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IClassService, ClassService>();
 
             /*
             services.AddCors(options =>

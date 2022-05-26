@@ -10,11 +10,11 @@ namespace PrivateSchool.Controllers
 {
     public class UserController : BaseApiController
     {
-        private readonly IUserService _userRespository;
+        private readonly IUserService _userService;
 
         public UserController(IUserService userRespository)
         {
-            _userRespository = userRespository;
+            _userService = userRespository;
         }
 
         [HttpPost("login")]
@@ -25,7 +25,7 @@ namespace PrivateSchool.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserReturnModel userModel = await _userRespository.Login(model.Username, model.Password);
+                UserReturnModel userModel = await _userService.Login(model.Username, model.Password);
                 if (userModel == null)
                 {
                     return BadRequest(new { message = "Username or password is invalid."});
@@ -44,7 +44,7 @@ namespace PrivateSchool.Controllers
         {
             if (ModelState.IsValid)
             {
-                UserReturnModel userModel = await _userRespository.Register(model);
+                UserReturnModel userModel = await _userService.Register(model);
 
                 if (userModel == null)
                 {
@@ -55,6 +55,17 @@ namespace PrivateSchool.Controllers
             }
             return BadRequest(ModelState);
 
+        }
+
+        [HttpGet("logout")]
+        [Authorize]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> logout()
+        {
+            await _userService.Logout();
+
+            return Ok();
         }
     }
 }

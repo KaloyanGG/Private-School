@@ -52,16 +52,30 @@ namespace PrivateSchool.Services
 
         public async Task<UserReturnModel> Register(RegisterBindingModel model)
         {
-            User user = _mapper.Map<User>(model);
+            string userType = StaticData.Roles[model.Type];
 
+            User user = _mapper.Map<User>(model);
             IdentityResult identityResult = await _userManager.CreateAsync(user,model.Password);
 
-            await _signInManager.UserManager.AddToRoleAsync(user, StaticData.Roles[model.Type]);
+            await _signInManager.UserManager.AddToRoleAsync(user, userType);
+
+            switch (userType)
+            {
+                case "Student":
+                    await _db.Students.AddAsync(new Student { UserId = user.Id });
+                    break;
+                case "Teacher":
+                    await _db.Teachers.AddAsync(new Teacher { UserId = user.Id });
+                    break;
+            }
+
+            await _db.SaveChangesAsync();
 
             if (!identityResult.Succeeded)
             {
                 return null;
             }
+
             await _signInManager.SignInAsync(user, false);
             return await SetUpUserModel(user);
         }

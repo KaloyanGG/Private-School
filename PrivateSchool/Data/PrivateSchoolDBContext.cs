@@ -5,7 +5,7 @@ using PrivateSchool.Entities;
 
 namespace PrivateSchool.Data
 {
-    public class PrivateSchoolDBContext : IdentityDbContext
+    public class PrivateSchoolDBContext : IdentityDbContext<User>
     {
 
         public PrivateSchoolDBContext(DbContextOptions<PrivateSchoolDBContext> options)
@@ -14,19 +14,26 @@ namespace PrivateSchool.Data
         }
 
         public DbSet<Student> Students { get; set; }
-        public DbSet<Teacher> Teacher { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Class> Classes { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-        public DbSet<StudentClasses> StudentClasses { get; set; }
+        //public DbSet<StudentClasses> StudentClasses { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<StudentClasses>(e =>
-            {
-                e.HasKey(k => new { k.StudentId, k.ClassId });
-            });
+            //modelBuilder.Entity<StudentClasses>(e =>
+            //{
+            //    e.HasKey(k => new { k.StudentId, k.ClassId });
+            //});
 
-            modelBuilder.Entity<IdentityUser>()
+
+            //modelBuilder.Entity<Class>()
+            //    .HasOne(c => c.Teacher)
+            //    .WithMany(t => t.Classes)
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<User>()
                 .Ignore(e => e.LockoutEnabled)
                 .Ignore(e => e.LockoutEnd)
                 .Ignore(e => e.NormalizedEmail)
