@@ -11,6 +11,8 @@ using Microsoft.OpenApi.Models;
 using PrivateSchool.Data;
 using PrivateSchool.Entities;
 using PrivateSchool.Middlewares;
+using PrivateSchool.Repositories;
+using PrivateSchool.Repositories.Interfaces;
 using PrivateSchool.Services;
 using PrivateSchool.Services.Interfaces;
 using System.Text;
@@ -81,8 +83,14 @@ namespace PrivateSchool
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PrivateSchool", Version = "v1" });
             });
 
+            services.AddScoped<ISubjectRepository,SubjectRepository>();
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IClassService, ClassService>();
+            services.AddScoped<ISubjectService, SubjectService>();
+
+            
+
 
             /*
             services.AddCors(options =>
