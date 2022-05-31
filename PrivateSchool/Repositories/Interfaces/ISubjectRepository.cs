@@ -9,5 +9,9 @@ namespace PrivateSchool.Repositories.Interfaces
     public interface ISubjectRepository
     {
         Task<List<Subject>> GetAllSubjects();
+        Task<Subject> GetSubjectByName(string name);
+        Task<bool> Contains(string name);
+        Task AddSubject(Subject subject);
+        Task DeleteByName(string name);
     }
 }
