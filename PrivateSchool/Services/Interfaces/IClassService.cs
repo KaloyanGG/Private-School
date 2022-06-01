@@ -12,8 +12,12 @@ namespace PrivateSchool.Services.Interfaces
     {
         Task<ClassReturnModel> Add(AddClassBindingModel model);
         Task<List<ClassReturnModel>> GetAllClasses();
-        Task<ClassReturnModel> GetClassById(int id);
-
-
+        Task<ClassReturnModel> GetClassReturnModelById(int id);
+        Task<ClassReturnModel> DeleteClassByName(string name);
+        Task<Class> GetClassById(int v);
+        Task<object> AddStudentToAClass(Student student, Class classs);
+        Task<List<StudentReturnModel>> GetAllStudentsByClassId(int id);
+        Task<Class> GetClassByName(string name);
+        Task<Class> updateClass(Class classs);
     }
 }
