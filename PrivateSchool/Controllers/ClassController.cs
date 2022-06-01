@@ -6,6 +6,7 @@ using PrivateSchool.Entities;
 using PrivateSchool.Models;
 using PrivateSchool.Models.BindingModels;
 using PrivateSchool.Services.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,11 +16,14 @@ namespace PrivateSchool.Controllers
     public class ClassController : BaseApiController
     {
         private readonly IClassService _classService;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public ClassController(IClassService classService)
+        public ClassController(IClassService classService, IUserService userService, IMapper mapper)
         {
             _classService = classService;
-           
+            _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpGet("all")]
@@ -42,7 +46,7 @@ namespace PrivateSchool.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var classs = await _classService.GetClassById(int.Parse(id));
+            var classs = await _classService.GetClassReturnModelById(int.Parse(id));
 
             if(classs == null)
             {
@@ -71,7 +75,85 @@ namespace PrivateSchool.Controllers
                 return Ok(model);
             }
             return BadRequest(ModelState);
+        }
+        [HttpPut("{name}")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Update([FromBody] AddClassBindingModel model, [FromRoute] string name)
+        {
+            if (ModelState.IsValid)
+            {
+                Class classs = await _classService.GetClassByName(name);
+                if (classs == null)
+                {
+                    return BadRequest(new { message = "Subject does not exist." });
+                }
+                classs.Name = model.Name;
+                classs.TeacherId = model.TeacherId;
 
+                Class result = await _classService.updateClass(classs);
+
+                return Ok(result);
+            }
+            return BadRequest(ModelState);
+        }
+
+
+
+
+        [HttpDelete("{name}")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Delete([FromRoute] string name)
+        {
+            if (ModelState.IsValid)
+            {
+                ClassReturnModel classs = await _classService.DeleteClassByName(name);
+                if (classs == null)
+                {
+                    return BadRequest(new { message = "Subject does not exist." });
+                }
+                return Ok(classs);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost("{classId}/{studentId}")]
+        public async Task<IActionResult> AddStudentToAClass([FromRoute] string classId,[FromRoute] string studentId)
+        {
+
+            if (ModelState.IsValid)
+            {
+                Class classs = await _classService.GetClassById(int.Parse(classId));
+                if (classs == null)
+                {
+                    return BadRequest(new { message = "Class does not exist." });
+                }
+                Student student = await _userService.GetStudentById(int.Parse(studentId));
+                if(student == null)
+                {
+                    return BadRequest(new { message = "Student does not exist." });
+                }
+                return Ok(await _classService.AddStudentToAClass(student, classs));
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpGet("{classId}/students")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStudentsInAClass([FromRoute] string classId)
+        {
+            if (ModelState.IsValid)
+            {
+                List<StudentReturnModel> students = await _classService.GetAllStudentsByClassId(int.Parse(classId));
+                if (students == null)
+                {
+                    return BadRequest(new { message = "Class has no students." });
+                }
+                return Ok(students);
+            }
+            return BadRequest(ModelState);
         }
 
 
