@@ -13,5 +13,6 @@ namespace PrivateSchool.Repositories.Interfaces
         Task<bool> Contains(string name);
         Task AddSubject(Subject subject);
         Task DeleteByName(string name);
+        Task UpdateSubject(Subject subject);
     }
 }

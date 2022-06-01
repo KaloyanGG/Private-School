@@ -30,17 +30,7 @@ namespace PrivateSchool.Repositories
         }
 
         public async Task DeleteByName(string name)
-        {/*
-            List<Subject> subjects =  _db.Subjects.ToList();
-
-            _db.Subjects.Add(new Subject
-            {
-                Name = "new",
-                MaxCapacity = 10
-            });
-            */
-            //var sbj = await GetSubjectByName(name);
-            // Subject sbj = await GetSubjectByName(name);
+        {
             foreach (Subject sbj in _db.Subjects.ToList())
             {
                 if (sbj.Name == name)
@@ -49,11 +39,6 @@ namespace PrivateSchool.Repositories
                     break;
                 }
             }
-           // _db.Subjects.Remove(_db.Subjects.Where(s => s.Name == name).FirstOrDefault());
-            //subjects.Remove(sbj);
-            //bool hasChanges = _db.ChangeTracker.HasChanges();
-            //int updates = await _db.SaveChangesAsync();
-            //_db.Entry(_db.Subjects).State = EntityState.Modified;
             
             await _db.SaveChangesAsync();
         }
@@ -66,6 +51,13 @@ namespace PrivateSchool.Repositories
         public async Task<Subject> GetSubjectByName(string name)
         {
             return await _db.Subjects.Where(s => s.Name == name).FirstOrDefaultAsync();
+        }
+
+        public async  Task UpdateSubject(Subject subject)
+        {
+            Subject subject1 = _db.Subjects.Where(s => s.Id == subject.Id).FirstOrDefault();
+            subject1 = subject;
+            await _db.SaveChangesAsync();
         }
     }
 }
