@@ -17,6 +17,13 @@ namespace PrivateSchool
             CreateMap<Class, ClassReturnModel>()
                 .ForMember(dest => dest.TeacherName, opt => opt.MapFrom(src=>src.Teacher.User.UserName))
                 .ForMember(dest =>dest.SubjectName, opt=>opt.MapFrom(src=>src.Teacher.Subject.Name));
+            CreateMap<Student, StudentReturnModel>()
+                .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.UserName));
+            CreateMap<User, FullInfoUserReturnModel>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id));
+
+
+
         }
 
     }
