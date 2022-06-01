@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PrivateSchool.Data;
@@ -55,14 +56,14 @@ namespace PrivateSchool.Services
             string userType = StaticData.Roles[model.Type];
 
             User user = _mapper.Map<User>(model);
-            IdentityResult identityResult = await _userManager.CreateAsync(user,model.Password);
+            IdentityResult identityResult = await _userManager.CreateAsync(user, model.Password);
 
             await _signInManager.UserManager.AddToRoleAsync(user, userType);
 
             switch (userType)
             {
                 case "Student":
-                    await _db.Students.AddAsync(new Student { UserId = user.Id });
+                    await _db.Students.AddAsync(new Student { UserId = user.Id, Classes = new List<Class>() });
                     break;
                 case "Teacher":
                     await _db.Teachers.AddAsync(new Teacher { UserId = user.Id });
@@ -115,6 +116,52 @@ namespace PrivateSchool.Services
                 Token = tokenHandler.WriteToken(token),
                 Role = roles.Count() == 1 ? roles[0] : ""
             };
+        }
+
+        public async Task<Student> GetStudentById(int id)
+        {
+            return await _db.Students.Where(s => s.Id == id).FirstOrDefaultAsync();
+
+        }
+
+        public async Task<FullInfoUserReturnModel> UpdateUser(User user)
+        {
+            User user1 = await _db.Users.Where(u => u.UserName == user.UserName).FirstOrDefaultAsync();
+            user1 = user;
+            await _db.SaveChangesAsync();
+
+            return _mapper.Map<FullInfoUserReturnModel>(user1);
+
+        }
+
+        public async Task<User> GetUserByUsername(string username)
+        {
+            return await _db.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
+        }
+
+        public async Task<FullInfoUserReturnModel> DeleteUserById(string id)
+        {
+            var user = await _db.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+            if (user == null)
+            {
+                return null;
+            }
+            if (_db.Students.Include(s => s.User).Select(s =>s.UserId).ToList().Contains(user.Id))
+            {
+                var s = _db.Students.Where(s => s.UserId == user.Id).FirstOrDefault();
+                _db.Students.Remove(s);
+            }
+            else
+            {
+                var s = _db.Teachers.Where(s => s.UserId == user.Id).FirstOrDefault();
+                _db.Teachers.Remove(s);
+            }
+            //await _db.SaveChangesAsync();
+            _db.Users.Remove(user);
+            await _db.SaveChangesAsync();
+
+            return _mapper.Map<FullInfoUserReturnModel>(user);
+        
         }
     }
 }
