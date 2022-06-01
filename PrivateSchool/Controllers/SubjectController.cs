@@ -69,6 +69,29 @@ namespace PrivateSchool.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPut("{name}")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Update([FromBody] AddSubjectBindingModel model, [FromRoute] string name)
+        {
+            if (ModelState.IsValid)
+            {
+                Subject subject = await _subjectService.GetSubjectByName(name);
+                if (subject == null)
+                {
+                    return BadRequest(new { message = "Subject does not exist." });
+                }
+                subject.Name = model.Name;
+                subject.MaxCapacity = model.MaxCapacity;
+                
+                Subject result = await _subjectService.updateSubject(subject);
+
+                return Ok(result);
+            }
+            return BadRequest(ModelState);
+        }
+
+
         [HttpDelete("{name}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -85,5 +108,9 @@ namespace PrivateSchool.Controllers
             }
             return BadRequest(ModelState);
         }
+
+
+
+
     }
 }
