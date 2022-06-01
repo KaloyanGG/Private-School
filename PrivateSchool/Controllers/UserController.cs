@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PrivateSchool.Entities;
 using PrivateSchool.Models;
 using PrivateSchool.Models.BindingModels;
 using PrivateSchool.Services.Interfaces;
@@ -67,5 +68,52 @@ namespace PrivateSchool.Controllers
 
             return Ok();
         }
+
+
+        [HttpPut("{username}")]
+        //[Authorize]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Update([FromBody] UpdateUserBindingModel model,[FromRoute] string username)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userService.GetUserByUsername(username);
+                if (user == null)
+                {
+                    return BadRequest(new { message = "No user with this username"});
+                }
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.EGN = model.EGN;
+                user.Email = model.Email;
+
+                FullInfoUserReturnModel userDTO = await _userService.UpdateUser(user);
+
+                return Ok(userDTO);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("{id}")]
+        //[Authorize]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            if (ModelState.IsValid)
+            {
+                FullInfoUserReturnModel user = await _userService.DeleteUserById(id);
+                if (user == null)
+                {
+                    return BadRequest(new { message = "User does not exist." });
+                }
+                return Ok(user);
+            }
+            return BadRequest(ModelState);
+        }
+
+
     }
 }
