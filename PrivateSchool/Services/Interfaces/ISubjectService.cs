@@ -14,5 +14,6 @@ namespace PrivateSchool.Services.Interfaces
         Task<Subject> GetSubjectByName(string name);
         Task<Subject> Add(AddSubjectBindingModel model);
         Task<Subject> DeleteSubjectByName(string name);
+        Task<Subject> updateSubject(Subject subject);
     }
 }

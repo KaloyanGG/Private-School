@@ -69,5 +69,12 @@ namespace PrivateSchool.Services
 
 
         }
+
+        public async Task<Subject> updateSubject(Subject subject)
+        {
+            await _subjectRepository.UpdateSubject(subject);
+
+            return await _subjectRepository.GetSubjectByName(subject.Name);
+        }
     }
 }
