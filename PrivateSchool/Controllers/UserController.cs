@@ -5,6 +5,8 @@ using PrivateSchool.Entities;
 using PrivateSchool.Models;
 using PrivateSchool.Models.BindingModels;
 using PrivateSchool.Services.Interfaces;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace PrivateSchool.Controllers
@@ -70,25 +72,17 @@ namespace PrivateSchool.Controllers
         }
 
 
-        [HttpPut("{username}")]
-        //[Authorize]
+        [HttpPut]
+        [Authorize]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Update([FromBody] UpdateUserBindingModel model,[FromRoute] string username)
+        public async Task<IActionResult> Update([FromBody] UpdateUserBindingModel model)
         {
             if (ModelState.IsValid)
             {
-                User user = await _userService.GetUserByUsername(username);
-                if (user == null)
-                {
-                    return BadRequest(new { message = "No user with this username"});
-                }
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.EGN = model.EGN;
-                user.Email = model.Email;
+                string role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).Any() ? "Teacher" : "Student";
 
-                FullInfoUserReturnModel userDTO = await _userService.UpdateUser(user);
+                FullInfoUserReturnModel userDTO = await _userService.Update(model, User.Identity.Name, role);
 
                 return Ok(userDTO);
             }
