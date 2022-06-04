@@ -16,8 +16,9 @@ namespace PrivateSchool.Services.Interfaces
         Task<UserReturnModel> Register(RegisterBindingModel model);
         Task Logout();
         Task<Student> GetStudentById(int id);
-        Task<FullInfoUserReturnModel> UpdateUser(User user);
+        Task<FullInfoUserReturnModel> Update(UpdateUserBindingModel user, string id, string role);
         Task<User> GetUserByUsername(string username);
         Task<FullInfoUserReturnModel> DeleteUserById(string id);
+        Task<TeacherReturnModel> AddSubjectByIdToTeacher(string name, int subjectId);
     }
 }

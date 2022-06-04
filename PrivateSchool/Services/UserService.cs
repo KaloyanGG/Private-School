@@ -121,16 +121,20 @@ namespace PrivateSchool.Services
         public async Task<Student> GetStudentById(int id)
         {
             return await _db.Students.Where(s => s.Id == id).FirstOrDefaultAsync();
-
         }
 
-        public async Task<FullInfoUserReturnModel> UpdateUser(User user)
+        public async Task<FullInfoUserReturnModel> Update(UpdateUserBindingModel user, string id, string role)
         {
-            User user1 = await _db.Users.Where(u => u.UserName == user.UserName).FirstOrDefaultAsync();
-            user1 = user;
-            await _db.SaveChangesAsync();
+            User existingUser = _db.Users.Find(id);
+            existingUser.EGN = user.EGN;
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            existingUser.Email = user.Email;
+            existingUser.DateOfBirth = DateTime.Parse(user.DateOfBirth);
 
-            return _mapper.Map<FullInfoUserReturnModel>(user1);
+            _db.SaveChanges();
+            return _mapper.Map<User, FullInfoUserReturnModel>(existingUser, opt =>
+                 opt.AfterMap((src, dest) => dest.Role = role));
 
         }
 
@@ -146,7 +150,7 @@ namespace PrivateSchool.Services
             {
                 return null;
             }
-            if (_db.Students.Include(s => s.User).Select(s =>s.UserId).ToList().Contains(user.Id))
+            if (_db.Students.Include(s => s.User).Select(s => s.UserId).ToList().Contains(user.Id))
             {
                 var s = _db.Students.Where(s => s.UserId == user.Id).FirstOrDefault();
                 _db.Students.Remove(s);
@@ -156,12 +160,27 @@ namespace PrivateSchool.Services
                 var s = _db.Teachers.Where(s => s.UserId == user.Id).FirstOrDefault();
                 _db.Teachers.Remove(s);
             }
-            //await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             _db.Users.Remove(user);
             await _db.SaveChangesAsync();
 
             return _mapper.Map<FullInfoUserReturnModel>(user);
-        
+
+        }
+
+        public async Task<TeacherReturnModel> AddSubjectByIdToTeacher(string userId, int subjectId)
+        {
+
+            var teacher = _db.Teachers
+                .Where(t => t.UserId == userId).FirstOrDefault();
+            teacher.SubjectId = subjectId;
+            await _db.SaveChangesAsync();
+
+            return _mapper.Map<TeacherReturnModel>(_db.Teachers.Where(t => t.UserId == userId)
+                                 .Include(t => t.User)
+                                 .Include(t => t.Subject)
+                                 .FirstOrDefault());
+
         }
     }
 }
