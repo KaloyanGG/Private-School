@@ -15,6 +15,7 @@ using PrivateSchool.Repositories;
 using PrivateSchool.Repositories.Interfaces;
 using PrivateSchool.Services;
 using PrivateSchool.Services.Interfaces;
+using System;
 using System.Text;
 
 namespace PrivateSchool
@@ -78,9 +79,31 @@ namespace PrivateSchool
 
             services.AddAutoMapper(typeof(MappingConfiguration));
 
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PrivateSchool", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "PrivateSchool", Version = "v1" });
+                var jwtSecurityScheme = new OpenApiSecurityScheme
+                {
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Name = "JWT Authentication",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+
+                options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { jwtSecurityScheme, Array.Empty<string>() }
+                });
             });
 
             services.AddScoped<ISubjectRepository,SubjectRepository>();
@@ -120,6 +143,7 @@ namespace PrivateSchool
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
