@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace PrivateSchool.Controllers
 {
-    //[Authorize]
     public class ClassController : BaseApiController
     {
         private readonly IClassService _classService;
@@ -29,6 +28,7 @@ namespace PrivateSchool.Controllers
         [HttpGet("all")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        //[Authorize(Roles = "Student")]
         public async Task<IActionResult> All()
         {
             var classes = await _classService.GetAllClasses();
@@ -58,9 +58,9 @@ namespace PrivateSchool.Controllers
         }
 
         [HttpPost("add")]
-        [AllowAnonymous]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Add([FromBody] AddClassBindingModel model)
         {
 
@@ -76,9 +76,11 @@ namespace PrivateSchool.Controllers
             }
             return BadRequest(ModelState);
         }
+
         [HttpPut("{name}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Update([FromBody] AddClassBindingModel model, [FromRoute] string name)
         {
             if (ModelState.IsValid)
@@ -98,12 +100,10 @@ namespace PrivateSchool.Controllers
             return BadRequest(ModelState);
         }
 
-
-
-
         [HttpDelete("{name}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete([FromRoute] string name)
         {
             if (ModelState.IsValid)
@@ -119,6 +119,7 @@ namespace PrivateSchool.Controllers
         }
 
         [HttpPost("{classId}/{studentId}")]
+        //[Authorize("Student")]
         public async Task<IActionResult> AddStudentToAClass([FromRoute] string classId,[FromRoute] string studentId)
         {
 

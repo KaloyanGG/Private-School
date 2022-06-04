@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PrivateSchool.Entities;
 using PrivateSchool.Models;
@@ -21,9 +22,11 @@ namespace PrivateSchool.Controllers
             _subjectService = subjectService;
         }
 
+        
         [HttpGet("all")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        
         public async Task<IActionResult> All()
         {
 
@@ -55,6 +58,7 @@ namespace PrivateSchool.Controllers
         [HttpPost]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Add([FromBody] AddSubjectBindingModel model)
         {
             if (ModelState.IsValid)
@@ -72,6 +76,7 @@ namespace PrivateSchool.Controllers
         [HttpPut("{name}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Update([FromBody] AddSubjectBindingModel model, [FromRoute] string name)
         {
             if (ModelState.IsValid)
@@ -91,10 +96,10 @@ namespace PrivateSchool.Controllers
             return BadRequest(ModelState);
         }
 
-
         [HttpDelete("{name}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete([FromRoute] string name)
         {
             if (ModelState.IsValid)
