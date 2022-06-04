@@ -36,11 +36,6 @@ namespace PrivateSchool.Services
 
         public async Task<List<ClassReturnModel>> GetAllClasses()
         {
-            foreach (var item in _db.Teachers.ToList())
-            {
-                item.SubjectId = 2;
-            }
-            await _db.SaveChangesAsync();
             
             var classes = _db.Classes
                 .Include(c=>c.Teacher).ThenInclude(c=>c.User)
