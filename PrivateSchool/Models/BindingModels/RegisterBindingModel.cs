@@ -13,11 +13,11 @@ namespace PrivateSchool.Models.BindingModels
         public int Type { get; set; }
 
         [Required]
-        [MinLength(3, ErrorMessage ="ne")]
+        [MinLength(3, ErrorMessage ="Too short")]
         public string Password { get; set; }
 
         [Required]
-        [Compare(nameof(Password),ErrorMessage = "ni stana")]
+        [Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
         public string RepeatPassword { get; set; }
     }
 }
