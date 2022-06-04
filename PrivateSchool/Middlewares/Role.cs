@@ -16,20 +16,17 @@ namespace PrivateSchool.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, PrivateSchoolDBContext db, RoleManager<IdentityRole> roleManager)
+        public async Task InvokeAsync(HttpContext context, RoleManager<IdentityRole> roleManager)
         {
-
-            foreach (KeyValuePair<int, string> KeyValue in StaticData.Roles)
+            foreach (string role in StaticData.Roles)
             {
-                if (!roleManager.RoleExistsAsync(KeyValue.Value).Result)
+                if (!roleManager.RoleExistsAsync(role).Result)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(KeyValue.Value));
+                    await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
 
             await _next(context);
-
         }
-
     }
 }
