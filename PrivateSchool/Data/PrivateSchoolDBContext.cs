@@ -25,13 +25,28 @@ namespace PrivateSchool.Data
             //{
             //    e.HasKey(k => new { k.StudentId, k.ClassId });
             //});
-
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(e => e.EGN).IsUnique();
+            });
+            modelBuilder.Entity<Class>(entity =>
+            {
+                entity.HasIndex(e => e.Name).IsUnique();
+            });
+            modelBuilder.Entity<Subject>(entity =>
+            {
+                entity.HasIndex(e => e.Name).IsUnique();
+            });/*
+            modelBuilder.Entity<Teacher>()
+                .HasOne(t=>t.Subject)
+                .WithOne(s=>s.).on
+            */
+                
 
             //modelBuilder.Entity<Class>()
             //    .HasOne(c => c.Teacher)
             //    .WithMany(t => t.Classes)
             //    .OnDelete(DeleteBehavior.NoAction);
-
 
             modelBuilder.Entity<User>()
                 .Ignore(e => e.LockoutEnabled)
