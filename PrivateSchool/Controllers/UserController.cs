@@ -24,14 +24,14 @@ namespace PrivateSchool.Controllers
         [AllowAnonymous]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Login([FromBody]LoginBindingModel model)
+        public async Task<IActionResult> Login([FromBody] LoginBindingModel model)
         {
             if (ModelState.IsValid)
             {
                 UserReturnModel userModel = await _userService.Login(model.Username, model.Password);
                 if (userModel == null)
                 {
-                    return BadRequest(new { message = "Username or password is invalid."});
+                    return BadRequest(new { message = "Username or password is invalid." });
                 }
                 return Ok(userModel);
             }
@@ -90,20 +90,41 @@ namespace PrivateSchool.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpDelete("{id}")]
-        //[Authorize]
+        // TODO: Add subject to a teacher
+        [HttpPut("{subjectId}")]
+        [Authorize(Roles ="Teacher")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Delete([FromRoute] string id)
+        public async Task<IActionResult> AddSubjectToTeacher([FromRoute] string subjectId)
         {
             if (ModelState.IsValid)
             {
-                FullInfoUserReturnModel user = await _userService.DeleteUserById(id);
+
+                TeacherReturnModel res = await _userService.AddSubjectByIdToTeacher(User.Identity.Name, int.Parse(subjectId));
+                if(res == null)
+                {
+                    return BadRequest("No subject with that Id exists");
+                }
+                return Ok(res);
+            }
+            return BadRequest(ModelState);
+
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Delete()
+        {
+            if (ModelState.IsValid)
+            {
+                FullInfoUserReturnModel user = await _userService.DeleteUserById(User.Identity.Name);
                 if (user == null)
                 {
                     return BadRequest(new { message = "User does not exist." });
                 }
-                return Ok(user);
+                return Ok();
             }
             return BadRequest(ModelState);
         }
