@@ -105,15 +105,15 @@ namespace PrivateSchool.Services
         }
 
 
-        public async Task<object> AddStudentToAClass(Student student, Class classs)
+        public async Task<object> AddStudentToAClass(string userId, Class classs)
         {
-            var stud = _db.Students.Include(s=>s.Classes).Where(s => s.Id == student.Id).FirstOrDefault();
+            var stud = _db.Students.Include(s=>s.Classes).Where(s => s.UserId == userId).FirstOrDefault();
             // CLASSES = NULL!
             stud.Classes.Add(classs);
             await _db.SaveChangesAsync();
             return new
             {
-                AllClassIdsForTheStudent = (await _db.Students.Where(s => s.Id == student.Id).FirstOrDefaultAsync()).Classes.Select(c=>new
+                AllClassIdsForTheStudent = (await _db.Students.Where(s => s.UserId == userId).FirstOrDefaultAsync()).Classes.Select(c=>new
                 {
                     c.Id, c.Name
                 }),
@@ -126,12 +126,15 @@ namespace PrivateSchool.Services
            // return (await _db.Classes.Where(c => c.Id == id).FirstOrDefaultAsync()).Students.ToList();
 
             var classs = await _db.Classes.Include(c=>c.Students).ThenInclude(s=>s.User).Where(c => c.Id == id).FirstOrDefaultAsync();
-
+            if (classs.Students.Count() == 0)
+            {
+                return null;
+            }
             return classs.Students.Select(s => new StudentReturnModel()
             {
                 Id = s.Id,
                 Username = s.User.UserName
-            }).ToList();
+            }).ToList() ;
 
         }
 
@@ -143,7 +146,9 @@ namespace PrivateSchool.Services
 
         public async Task<Class> updateClass(Class classs)
         {
-            Class classs1 = _db.Classes.Where(s => s.Id == classs.Id).FirstOrDefault();
+            Class classs1 = _db.Classes
+                .Where(s => s.Id == classs.Id)
+                .FirstOrDefault();
             classs1 = classs;
             await _db.SaveChangesAsync();
             return await GetClassByName(classs.Name);
