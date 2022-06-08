@@ -20,5 +20,7 @@ namespace PrivateSchool.Services.Interfaces
         Task<User> GetUserByUsername(string username);
         Task<FullInfoUserReturnModel> DeleteUserById(string id);
         Task<TeacherReturnModel> AddSubjectByIdToTeacher(string name, int subjectId);
+        Task<FullInfoTeacherModel> UpdateTeacher(UpdateTeacherBindingModel model, string name);
+        Task<FullInfoStudentModel> UpdateStudent(UpdateStudentBindingModel model, string name);
     }
 }

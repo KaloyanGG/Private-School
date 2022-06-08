@@ -42,6 +42,7 @@ namespace PrivateSchool.Services
         public async Task<UserReturnModel> Login(string username, string password)
         {
             SignInResult loginResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
+            
             if (!loginResult.Succeeded)
             {
                 return null;
@@ -83,7 +84,9 @@ namespace PrivateSchool.Services
 
         public async Task Logout()
         {
+            
             await _signInManager.SignOutAsync();
+            
         }
 
         private async Task<UserReturnModel> SetUpUserModel(User user)
@@ -123,20 +126,6 @@ namespace PrivateSchool.Services
             return await _db.Students.Where(s => s.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<FullInfoUserReturnModel> Update(UpdateUserBindingModel user, string id, string role)
-        {
-            User existingUser = _db.Users.Find(id);
-            existingUser.EGN = user.EGN;
-            existingUser.FirstName = user.FirstName;
-            existingUser.LastName = user.LastName;
-            existingUser.Email = user.Email;
-            existingUser.DateOfBirth = DateTime.Parse(user.DateOfBirth);
-
-            _db.SaveChanges();
-            return _mapper.Map<User, FullInfoUserReturnModel>(existingUser, opt =>
-                 opt.AfterMap((src, dest) => dest.Role = role));
-
-        }
 
         public async Task<User> GetUserByUsername(string username)
         {
@@ -181,6 +170,54 @@ namespace PrivateSchool.Services
                                  .Include(t => t.Subject)
                                  .FirstOrDefault());
 
+        }
+
+        public async Task<FullInfoUserReturnModel> Update(UpdateUserBindingModel user, string id, string role)
+        {
+            User existingUser = _db.Users.Find(id);
+            existingUser.EGN = user.EGN;
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            existingUser.Email = user.Email;
+            existingUser.DateOfBirth = DateTime.Parse(user.DateOfBirth);
+
+            _db.SaveChanges();
+            return _mapper.Map<User, FullInfoUserReturnModel>(existingUser, opt =>
+                 opt.AfterMap((src, dest) => dest.Role = role));
+
+        }
+
+        public async Task<FullInfoTeacherModel> UpdateTeacher(UpdateTeacherBindingModel user, string id)
+        {
+            Teacher existingTeacher = _db.Teachers.Include(t => t.User).Where(t => t.UserId == id).FirstOrDefault();
+            User existingUser = _db.Users.Find(id);
+            existingUser.EGN = user.EGN;
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            existingUser.Email = user.Email;
+            existingUser.DateOfBirth = DateTime.Parse(user.DateOfBirth);
+            existingTeacher.Level = user.Level;
+
+            _db.SaveChanges();
+            return _mapper.Map<Teacher, FullInfoTeacherModel>(existingTeacher, opt =>
+           opt.AfterMap((src, dest) => dest.Role = "Teacher"));
+
+        }
+
+        public async Task<FullInfoStudentModel> UpdateStudent(UpdateStudentBindingModel user, string id)
+        {
+            Student existingStudent = _db.Students.Include(t => t.User).Where(t => t.UserId == id).FirstOrDefault();
+            User existingUser = _db.Users.Find(id);
+            existingUser.EGN = user.EGN;
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
+            existingUser.Email = user.Email;
+            existingUser.DateOfBirth = DateTime.Parse(user.DateOfBirth);
+            existingStudent.AverageGrade = user.AverageGrade;
+
+            _db.SaveChanges();
+            return _mapper.Map<Student, FullInfoStudentModel>(existingStudent, opt =>
+                    opt.AfterMap((src, dest) => dest.Role = "Student"));
         }
     }
 }
