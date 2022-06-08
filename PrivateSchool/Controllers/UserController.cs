@@ -70,7 +70,40 @@ namespace PrivateSchool.Controllers
 
             return Ok();
         }
+        
+        [HttpPut("teacher")]
+        [Authorize(Roles = "Teacher")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateTeacher([FromBody] UpdateTeacherBindingModel model)
+        {
+            if (ModelState.IsValid)
+            {
+               // string role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).Any() ? "Teacher" : "Student";
 
+                FullInfoTeacherModel teacherDTO = await _userService.UpdateTeacher(model, User.Identity.Name);
+
+                return Ok(teacherDTO);
+            }
+
+            return BadRequest(ModelState);
+        }
+        [HttpPut("student")]
+        [Authorize(Roles = "Student")]
+        [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateStudent([FromBody] UpdateStudentBindingModel model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                FullInfoStudentModel teacherDTO = await _userService.UpdateStudent(model, User.Identity.Name);
+
+                return Ok(teacherDTO);
+            }
+
+            return BadRequest(ModelState);
+        }
 
         [HttpPut]
         [Authorize]
@@ -90,7 +123,6 @@ namespace PrivateSchool.Controllers
             return BadRequest(ModelState);
         }
 
-        // TODO: Add subject to a teacher
         [HttpPut("{subjectId}")]
         [Authorize(Roles ="Teacher")]
         [ProducesDefaultResponseType]
@@ -124,7 +156,7 @@ namespace PrivateSchool.Controllers
                 {
                     return BadRequest(new { message = "User does not exist." });
                 }
-                return Ok();
+                return Ok(new { message = "User deleted successfully" });
             }
             return BadRequest(ModelState);
         }
