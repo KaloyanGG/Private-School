@@ -14,6 +14,7 @@ namespace PrivateSchool.Models.BindingModels
 
         [Required]
         [MinLength(3, ErrorMessage ="Too short")]
+        //[DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required]
