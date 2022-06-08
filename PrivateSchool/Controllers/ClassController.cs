@@ -28,7 +28,6 @@ namespace PrivateSchool.Controllers
         [HttpGet("all")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        //[Authorize(Roles = "Student")]
         public async Task<IActionResult> All()
         {
             var classes = await _classService.GetAllClasses();
@@ -88,7 +87,7 @@ namespace PrivateSchool.Controllers
                 Class classs = await _classService.GetClassByName(name);
                 if (classs == null)
                 {
-                    return BadRequest(new { message = "Subject does not exist." });
+                    return BadRequest(new { message = "Class does not exist." });
                 }
                 classs.Name = model.Name;
                 classs.TeacherId = model.TeacherId;
@@ -111,18 +110,17 @@ namespace PrivateSchool.Controllers
                 ClassReturnModel classs = await _classService.DeleteClassByName(name);
                 if (classs == null)
                 {
-                    return BadRequest(new { message = "Subject does not exist." });
+                    return BadRequest(new { message = "Class does not exist." });
                 }
                 return Ok(classs);
             }
             return BadRequest(ModelState);
         }
 
-        [HttpPost("{classId}/{studentId}")]
-        //[Authorize("Student")]
-        public async Task<IActionResult> AddStudentToAClass([FromRoute] string classId,[FromRoute] string studentId)
+        [HttpPost("{classId}")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> AddStudentToAClass([FromRoute] string classId)
         {
-
             if (ModelState.IsValid)
             {
                 Class classs = await _classService.GetClassById(int.Parse(classId));
@@ -130,12 +128,8 @@ namespace PrivateSchool.Controllers
                 {
                     return BadRequest(new { message = "Class does not exist." });
                 }
-                Student student = await _userService.GetStudentById(int.Parse(studentId));
-                if(student == null)
-                {
-                    return BadRequest(new { message = "Student does not exist." });
-                }
-                return Ok(await _classService.AddStudentToAClass(student, classs));
+                //Student student = await _userService.GetStudentById(int.Parse(studentId));
+                return Ok(await _classService.AddStudentToAClass(User.Identity.Name, classs));
             }
             return BadRequest(ModelState);
         }
