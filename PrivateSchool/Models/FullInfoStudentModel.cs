@@ -7,7 +7,7 @@ namespace PrivateSchool.Models
 {
     public class FullInfoStudentModel :FullInfoUserReturnModel
     {
-        public double? AverageGrade { get; set; }
+        public double AverageGrade { get; set; }
 
     }
 }

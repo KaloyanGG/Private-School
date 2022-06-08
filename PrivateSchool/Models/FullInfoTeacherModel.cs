@@ -7,6 +7,6 @@ namespace PrivateSchool.Models
 {
     public class FullInfoTeacherModel : FullInfoUserReturnModel
     {
-        public int? Level { get; set; }
+        public int Level { get; set; }
     }
 }
