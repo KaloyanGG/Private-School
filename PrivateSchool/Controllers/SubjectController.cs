@@ -26,7 +26,6 @@ namespace PrivateSchool.Controllers
         [HttpGet("all")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        
         public async Task<IActionResult> All()
         {
 

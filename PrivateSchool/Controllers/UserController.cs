@@ -114,6 +114,7 @@ namespace PrivateSchool.Controllers
             if (ModelState.IsValid)
             {
                 string role = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).Any() ? "Teacher" : "Student";
+               
 
                 FullInfoUserReturnModel userDTO = await _userService.Update(model, User.Identity.Name, role);
 
